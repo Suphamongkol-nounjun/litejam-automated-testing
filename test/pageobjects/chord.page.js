@@ -27,6 +27,15 @@ class ChordScreen {
         chordTabText: 'Type of chord...',
         fretboardClass: 'android.widget.HorizontalScrollView',
         fingerguideButtonXpath: '//android.widget.ScrollView/android.view.View[3]',
+        fingerguideTitle: 'LED Colour Guide',
+        firstFingerguideText: 'RED LED = First Finger',
+        secondFingerguideText: 'GREEN LED = Second Finger',
+        thirdFingerguideText: 'BLUE LED = Third Finger',
+        fourthFingerguideText: 'YELLOW LED = Fourth Finger',
+        openStringText: 'WHITE LED = Play String Open',
+        unlitStrokeText: "UNLIT STRING: Don't Play That String",
+        closePopupfigerGuide: 'Scrim',
+
         allPatternButtonsXpath: "//android.view.View[starts-with(@content-desc, 'chord-pattern-')]",
     };
 
@@ -38,6 +47,16 @@ class ChordScreen {
     get chordTab() { return $(`~${this.locators.chordTabText}`); }
     get fretboard() { return $(this.locators.fretboardClass); }
     get fingerguideButton() { return $(this.locators.fingerguideButtonXpath); }
+    get fingerguideTitle() { return $(`~${this.locators.fingerguideTitle}`); }
+    get firstFingerguideText() { return $(`~${this.locators.firstFingerguideText}`); }
+    get secondFingerguideText() { return $(`~${this.locators.secondFingerguideText}`); }
+    get thirdFingerguideText() { return $(`~${this.locators.thirdFingerguideText}`); }
+    get fourthFingerguideText() { return $(`~${this.locators.fourthFingerguideText}`); }
+    get openStringText() { return $(`~${this.locators.openStringText}`); }
+    get unlitStrokeText() { return $(`~${this.locators.unlitStrokeText}`); }
+    get closePopupfigerGuide() { return $(`~${this.locators.closePopupfigerGuide}`); }
+
+    
 
    /**
      * ✅ CHANGED: อัปเดตให้ใช้ Accessibility ID รูปแบบใหม่
@@ -56,6 +75,9 @@ class ChordScreen {
 
     positionButton(position) {
         return $(`~${String(position)}`);
+    }
+    fingerguideButtonXpath() {
+        return $(this.locators.fingerguideButtonXpath);
     }
 
     // --- Action Methods (ส่วนของฟังก์ชันการกระทำ) ---
@@ -82,6 +104,12 @@ class ChordScreen {
      */
     async clickPosition(position) {
         await (await this.positionButton(position)).click();
+    }
+    async clickFingerguideButton() {
+        await this.fingerguideButton.click();
+    }
+    async closeFingerguidePopup() {
+        await this.closePopupfigerGuide.click();
     }
 
     /**
@@ -114,6 +142,25 @@ class ChordScreen {
           const titleElement = await $(`~${expectedTitle}`);
           await expect(titleElement).toBeDisplayed();
       }
+      async verifyFingerguideButtonDisplayed() {
+          await expect(this.fingerguideButton).toBeDisplayed();
+      }
+      async verifyFingerguideTitleDisplayed() {
+            await expect(this.fingerguideTitle).toBeDisplayed();
+          }
+
+          async verifyFingerguideTextDisplayed() {
+  
+                await expect(this.firstFingerguideText).toBeDisplayed();
+                await expect(this.secondFingerguideText).toBeDisplayed();
+                await expect(this.thirdFingerguideText).toBeDisplayed();
+                await expect(this.fourthFingerguideText).toBeDisplayed();
+                await expect(this.openStringText).toBeDisplayed();
+                await expect(this.unlitStrokeText).toBeDisplayed();
+                
+
+          }
+
 
     /**
      * ✅ ADDED: ฟังก์ชันใหม่สำหรับนับจำนวน Pattern ทั้งหมดที่แสดงบนหน้าจอ

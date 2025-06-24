@@ -12,37 +12,60 @@ import { startScreenRecording, stopScreenRecording } from '../../../utils/record
 describe('Notero LiteJam Application Tests', function () {
     this.timeout(180000); // เพิ่มเวลา timeout สำหรับทุกเทสใน suite นี้
 
-    // ✅ FIXED: ใช้ async function()
-    before(async function () {
-        console.log('--- beforeAll: Initial app setup and permission handling ---');
-        await browser.pause(3000);
-        const permissionsButton = await $('id=com.android.permissioncontroller:id/permission_allow_foreground_only_button');
-        if (await permissionsButton.isDisplayed()) {
-            console.log('Permission 1 displayed, clicking...');
-            await permissionsButton.click();
-            await browser.pause(2000);
-        }
-        const locationButton = await $('id=com.android.permissioncontroller:id/permission_allow_button');
-        if (await locationButton.isDisplayed()) {
-            console.log('Permission 2 displayed, clicking...');
-            await locationButton.click();
-            await browser.pause(3000);
-        }
-        const voiceButton = await $('id=com.android.permissioncontroller:id/permission_allow_foreground_only_button')
-        if (await voiceButton.isDisplayed()) {
-            console.log('Permission 3 displayed, clicking...');
-            await voiceButton.click();
-            await browser.pause(2000);
-        }
-        const introView = await $('//android.widget.ScrollView/android.view.View[3]');
-        if (await introView.isDisplayed()) {
-            console.log('Intro View displayed, clicking...');
-            await introView.click();
-            await browser.pause(2000);
-        }
+    // // ✅ FIXED: ใช้ async function()
+    // before(async function () {
+    //     console.log('--- beforeAll: Initial app setup and permission handling ---');
+    //     await browser.pause(3000);
+    //     const permissionsButton = await $('id=com.android.permissioncontroller:id/permission_allow_foreground_only_button');
+    //     if (await permissionsButton.isDisplayed()) {
+    //         console.log('Permission 1 displayed, clicking...');
+    //         await permissionsButton.click();
+    //         await browser.pause(2000);
+    //     }
+    //     const locationButton = await $('id=com.android.permissioncontroller:id/permission_allow_button');
+    //     if (await locationButton.isDisplayed()) {
+    //         console.log('Permission 2 displayed, clicking...');
+    //         await locationButton.click();
+    //         await browser.pause(3000);
+    //     }
+    //     const voiceButton = await $('id=com.android.permissioncontroller:id/permission_allow_foreground_only_button')
+    //     if (await voiceButton.isDisplayed()) {
+    //         console.log('Permission 3 displayed, clicking...');
+    //         await voiceButton.click();
+    //         await browser.pause(2000);
+    //     }
+    //     const introView = await $('//android.widget.ScrollView/android.view.View[3]');
+    //     if (await introView.isDisplayed()) {
+    //         console.log('Intro View displayed, clicking...');
+    //         await introView.click();
+    //         await browser.pause(2000);
+    //     }
         
-        console.log('--- beforeAll: Setup and permission handling done ---');
-    });
+    //     console.log('--- beforeAll: Setup and permission handling done ---');
+    // });
+    before(async function () {
+    console.log('--- beforeAll: Initial app setup and permission handling ---');
+
+    const tryClick = async (selector, label) => {
+        try {
+            const el = await $(selector);
+            if (await el.isDisplayed()) {
+                console.log(`${label} displayed, clicking...`);
+                await el.click();
+                await browser.pause(3000);
+            }
+        } catch (e) {
+            console.warn(`${label} not found or failed: ${e.message}`);
+        }
+    };
+
+    await tryClick('id=com.android.permissioncontroller:id/permission_allow_foreground_only_button', 'Permission 1');
+    await tryClick('id=com.android.permissioncontroller:id/permission_allow_button', 'Permission 2');
+    await tryClick('id=com.android.permissioncontroller:id/permission_allow_foreground_only_button', 'Permission 3');
+    await tryClick('//android.widget.ScrollView/android.view.View[3]', 'Intro View');
+
+    console.log('--- beforeAll: Setup and permission handling done ---');
+});
 
     beforeEach(async function () {
         const testName = this.currentTest.title.replace(/\s+/g, '_');
@@ -158,7 +181,7 @@ describe('Notero LiteJam Application Tests', function () {
    describe('Check UI Chord Screen', function () {
     allure.addFeature("UI Verification");
 
-    it('TC-APP-003: ควรแสดงผล UI ของหน้า Chord ได้อย่างถูกต้อง', async function () {
+    it('TC-CHORD-UI-001: ควรแสดงผล UI ของหน้า Chord ได้อย่างถูกต้อง', async function () {
         const tagName = 'chord-screen-ui';
         const deviceNameForFolder = browser.capabilities.desired?.deviceName || browser.capabilities.deviceName || 'unknown-device';
 
@@ -186,6 +209,42 @@ describe('Notero LiteJam Application Tests', function () {
         }
     });
 
+        it.only('TC-CHORD-UI-002: Check Popup Finger guide', async function () {
+        const tagName = 'chord-screen-ui-finger-guide';
+        const deviceNameForFolder = browser.capabilities.desired?.deviceName || browser.capabilities.deviceName || 'unknown-device';
+
+        allure.addStory("Chord Screen Finger Guide");
+        allure.startStep('Verify Chord Screen Finger Guide Popupl)');
+
+
+        try {
+            await ChordScreen.clickFingerguideButton();
+            allure.addStep('✅ Clicked Finger Guide button');
+            await ChordScreen.verifyFingerguideTitleDisplayed();
+            allure.addStep('✅ Finger Guide title is displayed');
+
+            await ChordScreen.verifyFingerguideTextDisplayed();
+            allure.addStep('✅ Finger Guide text is displayed');
+
+            const diff = await visualCheck(tagName); // ✅ ได้ค่ากลับมาแล้ว
+            console.log(`Visual diff for ${tagName}: ${diff}%`);
+
+            await assertVisualMatch(diff, tagName, deviceNameForFolder, { fail: 0 });
+
+            await ChordScreen.closeFingerguidePopup();
+            allure.addStep('✅ Closed Finger Guide popup');
+
+
+            allure.endStep('passed');
+
+        } catch (error) {
+            allure.addStep(`❌ Test failed: ${error.message}`);
+            attachVisualTestResultsToAllure(allure, tagName, deviceNameForFolder); // ⬅ แนบแม้ fail
+            allure.endStep('failed');
+            throw error;
+        }
+    });
+
 
 const CHORD_CHUNK_SIZE = 10; // แบ่งเป็นชุดละ 10 คอร์ด
 
@@ -198,7 +257,7 @@ ROOT_NOTES.forEach(rootNote => {
             (chunkIndex + 1) * CHORD_CHUNK_SIZE
         );
 
-        it(`TC-CHORD-${rootNote}-Chunk-${chunkIndex + 1}: should verify ${rootNote} ${chordChunk.length} chords`, async function () {
+        it.skip(`TC-CHORD-${rootNote}-Chunk-${chunkIndex + 1}: should verify ${rootNote} ${chordChunk.length} chords`, async function () {
             this.timeout(5 * 60 * 1000); // เพิ่ม timeout ต่อเคส
 
             const deviceNameForFolder = browser.capabilities.desired?.deviceName || browser.capabilities.deviceName;

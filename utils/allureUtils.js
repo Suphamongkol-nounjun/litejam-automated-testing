@@ -1,6 +1,10 @@
 // test/utils/allureUtils.js
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const { APP_VERSION } = process.env;
 
 /**
  * ค้นหาไฟล์ในโฟลเดอร์ที่ชื่อขึ้นต้นด้วย tag + '--'
@@ -35,9 +39,9 @@ export function attachVisualTestResultsToAllure(allure, tagName, deviceName) {
         const deviceFolder = deviceName.replace(/\s+/g, '_').toLowerCase();
         console.log(`[Allure-Attach] Attaching results for tag: "${tagName}" on device: "${deviceFolder}"`);
 
-        const baselineDir = path.join(process.cwd(), 'tests', 'baseline', deviceFolder);
-        const actualDir = path.join(process.cwd(), 'tmp', 'actual', deviceFolder);
-        const diffDir = path.join(process.cwd(), 'tmp', 'diff', deviceFolder);
+        const baselineDir = path.join(process.cwd(), "visual-testing", 'baseline',APP_VERSION, deviceFolder);
+        const actualDir = path.join(process.cwd(), "visual-testing",'tmp',APP_VERSION, 'actual', deviceFolder);
+        const diffDir = path.join(process.cwd(), "visual-testing",'tmp',APP_VERSION, 'diff', deviceFolder);
 
         const baselinePath = findFileByTag(baselineDir, tagName);
         const actualPath = findFileByTag(actualDir, tagName);

@@ -1,6 +1,5 @@
 node_modules
 allure-report
 allure-results
-tests
-tmp
-
+visual-testing/tmp
+.env

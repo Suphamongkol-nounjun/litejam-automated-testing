@@ -1,9 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import allure from '@wdio/allure-reporter';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const { APP_VERSION } = process.env;
 
 
 export const config = {
+    
 
     // after: async function (result, capabilities, specs) {
     //     // ไม่ให้ปิดแอพเมื่อการทดสอบเสร็จ
@@ -19,15 +24,18 @@ export const config = {
     port: 4723,
     protocol: 'http',
     path: '/wd/hub',  // ✅ เพิ่ม path ตรงนี้
-    capabilities: [{
+    
+    capabilities: [
+        {
         platformName: 'Android',
         'appium:deviceName': 'Xiaomi 10T Pro',
         'appium:platformVersion': '12',
         'appium:automationName': 'UiAutomator2',
         'appium:appPackage': 'co.notero.litejam',
         'appium:appActivity': '.MainActivity',
-        'appium:noReset': false
-    }],
+        'appium:noReset': false,
+        'appium:autoGrantPermissions': true,
+    },],
      services: [
     // Service ตัวที่ 1: จัดการ Appium Server พร้อมตัวเลือกเสริม
     ['appium', {
@@ -41,9 +49,9 @@ export const config = {
             "visual",
             {
                 // Some options, see the docs for more
-                baselineFolder: path.join(process.cwd(), "tests", "baseline"),
+                baselineFolder: path.join(process.cwd(), "visual-testing", "baseline",APP_VERSION),
                 formatImageName: "{tag}-{logName}-{width}x{height}",
-                screenshotPath: path.join(process.cwd(), "tmp"),
+                screenshotPath: path.join(process.cwd(), "visual-testing","tmp",APP_VERSION),
                 savePerInstance: true,
                 blockOutStatusBar: true,
                 // ... more options

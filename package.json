@@ -22,6 +22,10 @@
     "testallure": "mocha checkbettery.js --reporter mocha-allure-reporter",
     "allure:report": "allure generate allure-results --clean && allure open",
     "test": "npx wdio run ./wdio.conf.js",
-    "test:report": "npx wdio run ./wdio.conf.js && npm run allure:report"
+    "test:report": "npx wdio run ./wdio.conf.js && npm run allure:report",
+    "test:watch": "npx wdio run ./wdio.conf.js --watch"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0"
   }
 }
