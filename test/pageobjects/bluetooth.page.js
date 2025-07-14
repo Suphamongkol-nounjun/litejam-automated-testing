@@ -12,6 +12,8 @@ export class BluetoothPage {
   connectingText = '~Connecting...';
   connectedText = '~CONNECTED';
   connectText = '~(Connect: 1 Device)';
+  backButton = '//android.widget.FrameLayout[@resource-id="android:id/content"]/android.widget.FrameLayout/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View[1]/android.widget.Button'
+
 
   // --- 🧭 Actions ---
   async openSettingTab() {
@@ -28,6 +30,12 @@ export class BluetoothPage {
 
   async clickRefresh() {
     const el = await $(this.refreshButton);
+    await el.waitForDisplayed({ timeout: 5000 });
+    await el.click();
+  }
+
+  async goBack() {
+    const el = await $(this.backButton);
     await el.waitForDisplayed({ timeout: 5000 });
     await el.click();
   }

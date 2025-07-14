@@ -4,6 +4,7 @@ import { browser, expect } from '@wdio/globals';
 import ChordScreen from '../../pageobjects/chord.page.js';
 import { ROOT_NOTES,CHORD_TYPES } from '../../pageobjects/chord.page.js';
 import BluetoothPage from '../../pageobjects/bluetooth.page.js';
+import Navbar from '../../pageobjects/navbar.js';
 import { attachVisualTestResultsToAllure } from '../../../utils/allureUtils.js';
 import { visualCheck,assertVisualMatch } from '../../../utils/visualUtils.js';
 import { startScreenRecording, stopScreenRecording } from '../../../utils/recordScreen.js';
@@ -117,7 +118,7 @@ describe('Notero LiteJam Application Tests', function () {
 });
 
 
-        it('TC-APP-002: ควรเชื่อมต่อ Lite Jam RGB 24 ได้สำเร็จ และกลับมาหน้า Chord', async function () {
+        it('TC-APP-002: Should successfully connect to Lite Jam RGB 24 and return to the Chord screen', async function () {
     const deviceNameForFolder = browser.capabilities.desired?.deviceName || browser.capabilities.deviceName || 'unknown-device';
     const tags = {
         setting: 'tap-setting',
@@ -148,15 +149,10 @@ describe('Notero LiteJam Application Tests', function () {
         expect(success).toBe(true);
         allure.addStep('✅ Device connected successfully');
 
-        const backButton = await $('//android.widget.FrameLayout[@resource-id="android:id/content"]/android.widget.FrameLayout/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View[1]/android.widget.Button');
-        await backButton.waitForDisplayed({ timeout: 5000 });
-        await backButton.click();
+        await BluetoothPage.goBack(); // กลับไปที่หน้าจอหลัก
         allure.addStep('✅ Navigated back to main screen');
 
-        const chordTab = await $('~Chord\nTab 1 of 4');
-        await chordTab.waitForDisplayed({ timeout: 5000 });
-        expect(await chordTab.isDisplayed()).toBe(true);
-        await chordTab.click();
+        await Navbar.clickChordTab();
         allure.addStep('✅ Verified return to Chord tab');
 
         allure.endStep('passed');
@@ -181,7 +177,7 @@ describe('Notero LiteJam Application Tests', function () {
    describe('Check UI Chord Screen', function () {
     allure.addFeature("UI Verification");
 
-    it('TC-CHORD-UI-001: ควรแสดงผล UI ของหน้า Chord ได้อย่างถูกต้อง', async function () {
+    it('TC-CHORD-UI-001: The Chord screen UI should be displayed correctly', async function () {
         const tagName = 'chord-screen-ui';
         const deviceNameForFolder = browser.capabilities.desired?.deviceName || browser.capabilities.deviceName || 'unknown-device';
 
@@ -209,7 +205,7 @@ describe('Notero LiteJam Application Tests', function () {
         }
     });
 
-        it.only('TC-CHORD-UI-002: Check Popup Finger guide', async function () {
+        it('TC-CHORD-UI-002: Check Popup Finger guide', async function () {
         const tagName = 'chord-screen-ui-finger-guide';
         const deviceNameForFolder = browser.capabilities.desired?.deviceName || browser.capabilities.deviceName || 'unknown-device';
 
