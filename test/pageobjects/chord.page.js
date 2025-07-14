@@ -131,6 +131,7 @@ class ChordScreen {
         await expect(this.fretboard).toBeDisplayed();
         await expect(this.chooseYourChordText).toBeDisplayed();
         await expect(this.chordTab).toBeDisplayed();
+        await expect(this.fingerguideButton).toBeDisplayed();
     }
     /**
        * ตรวจสอบว่า title ของคอร์ดที่แสดงอยู่ตรงกับ root + chordType ที่เลือก
